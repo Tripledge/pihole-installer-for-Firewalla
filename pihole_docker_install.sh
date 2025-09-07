@@ -28,14 +28,14 @@ cd $path2
 sudo systemctl start docker
 sudo docker-compose pull
 sudo docker-compose up --no-start
-sudo ip route add 172.16.0.0/24 dev br-$(sudo docker network inspect pi-hole_default |jq -r '.[0].Id[0:12]') table lan_routable
-sudo ip route add 172.16.0.0/24 dev br-$(sudo docker network inspect pi-hole_default |jq -r '.[0].Id[0:12]') table wan_routable
+sudo ip route add 192.168.15.0/24 dev br-$(sudo docker network inspect pi-hole_default |jq -r '.[0].Id[0:12]') table lan_routable
+sudo ip route add 192.168.15.0/24 dev br-$(sudo docker network inspect pi-hole_default |jq -r '.[0].Id[0:12]') table wan_routable
 sudo docker-compose up --detach
 
 
 sudo docker ps
 
-echo address=/pihole/172.16.0.2 > ~/.firewalla/config/dnsmasq_local/pihole
+echo address=/pihole/192.168.15.2 > ~/.firewalla/config/dnsmasq_local/pihole
 sudo systemctl restart firerouter_dns
 sudo docker restart pihole
 
@@ -56,9 +56,9 @@ echo "#!/bin/bash
 # v1.0
 sudo systemctl start docker
 sudo ipset create -! docker_lan_routable_net_set hash:net
-sudo ipset add -! docker_lan_routable_net_set 172.16.0.0/24
+sudo ipset add -! docker_lan_routable_net_set 192.168.15.0/24
 sudo ipset create -! docker_wan_routable_net_set hash:net
-sudo ipset add -! docker_wan_routable_net_set 172.16.0.0/24
+sudo ipset add -! docker_wan_routable_net_set 192.168.15.0/24
 sudo systemctl start docker-compose@pi-hole" > /home/pi/.firewalla/config/post_main.d/start_pihole.sh
 
 chmod a+x /home/pi/.firewalla/config/post_main.d/start_pihole.sh
@@ -70,4 +70,4 @@ do
         echo -n "."
         sleep 2s
 done
-echo -e "Done!\n\nYou can open  http://172.16.0.2/admin in your favorite browser and set up your pi-hole now. (\n\nNote it may not have a certificate so the browser may give you a security warning.)\n\n"
+echo -e "Done!\n\nYou can open  http://192.168.15.2/admin in your favorite browser and set up your pi-hole now. (\n\nNote it may not have a certificate so the browser may give you a security warning.)\n\n"
